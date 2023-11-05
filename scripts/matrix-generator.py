@@ -29,11 +29,14 @@ def find_dockerfile_and_build_yaml(file_path):
     return None, None
 
 def get_changed_dockerfiles():
-    base_ref = os.environ.get('GITHUB_BASE_REF', 'main')
-    commit_sha = os.environ.get('GITHUB_SHA', 'HEAD')
+    base_ref = os.environ.get('GITHUB_BASE_REF')
+    commit_sha = os.environ.get('GITHUB_SHA')
 
-    command = ['git', 'diff', '--name-only', f'{base_ref}...{commit_sha}']
-    # print(f"Running command {command}")
+    if not base_ref or not commit_sha:
+        print("Could not find GITHUB_BASE_REF or GITHUB_SHA environment variables, skipping matrix generation")
+        return []
+    command = ['git', 'diff', '--name-only', '--diff-filter=ACMRT', f'{base_ref}', f'{commit_sha}']
+    print(f"Running command {command}")
     
     result = subprocess.run(command, capture_output=True, text=True)
     changed_files = result.stdout.strip().split('\n')
@@ -42,7 +45,7 @@ def get_changed_dockerfiles():
     dockerfile_info = []
 
     if not changed_files or changed_files == ['']:
-        print("No files changed, skipping matrix generation")
+        # print("No files changed, skipping matrix generation")
         return dockerfile_info
 
     for file_path in changed_files:

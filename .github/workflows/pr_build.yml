@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -30,12 +32,29 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyyaml
 
+    - name: Debug output
+      run: |
+        echo "Base ref: $GITHUB_BASE_REF"
+        echo "SHA: $GITHUB_SHA"
+
+    - name: Get changed files again
+      id: changes
+      # Set outputs using the command.
+      run: |
+        echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
+        echo "::set-output name=ts::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .ts$ | xargs)"
+
+    - name: Print all changed files again
+      run: | 
+        echo "Changed Files: ${{ steps.changes.outputs.all }}"
+
+
     - name: Generate matrix for build
       id: set-matrix
       run: python scripts/matrix-generator.py
       env:
-        GITHUB_BASE_REF: ${{ github.base_ref }}
-        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_BASE_REF: ${{ github.event.pull_request.base.sha }}
+        GITHUB_SHA: ${{ github.sha }}"
 
     # - name: Login to Docker Hub
     #   uses: docker/login-action@v2
