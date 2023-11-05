@@ -1,0 +1,6 @@
+---
+name: base-image
+architecture:
+  - amd64
+disabled: false
+sign: false
