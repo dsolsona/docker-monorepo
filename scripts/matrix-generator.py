@@ -42,7 +42,7 @@ def get_changed_dockerfiles():
     dockerfile_info = []
 
     if not changed_files or changed_files == ['']:
-        print("No files changed, skipping matrix generation")
+        # print("No files changed, skipping matrix generation")
         return dockerfile_info
 
     for file_path in changed_files:
