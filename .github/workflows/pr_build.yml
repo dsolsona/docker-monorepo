@@ -44,10 +44,22 @@ jobs:
         echo "Head ref: ${{ github.event.pull_request.head.sha }}"
         git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > changed_files.txt
         echo "::set-output name=all::$(cat changed_files.txt)"
-        
+
     - name: Print all changed files
       run: | 
         echo "Changed Files: ${{ steps.files.outputs.all }}"
+
+      - name: Get changed files again
+        id: changes
+        # Set outputs using the command.
+        run: |
+          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
+          echo "::set-output name=ts::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .ts$ | xargs)"
+
+    - name: Print all changed files again
+      run: | 
+        echo "Changed Files: ${{ steps.changes.outputs.all }}"
+
 
     - name: Generate matrix for build
       id: set-matrix
