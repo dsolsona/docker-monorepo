@@ -37,18 +37,6 @@ jobs:
         echo "Base ref: $GITHUB_BASE_REF"
         echo "SHA: $GITHUB_SHA"
 
-    - name: Get changed files
-      id: files
-      run: |
-        echo "Base ref: ${{ github.event.pull_request.base.sha }}"
-        echo "Head ref: ${{ github.event.pull_request.head.sha }}"
-        git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > changed_files.txt
-        echo "::set-output name=all::$(cat changed_files.txt)"
-
-    - name: Print all changed files
-      run: | 
-        echo "Changed Files: ${{ steps.files.outputs.all }}"
-
       - name: Get changed files again
         id: changes
         # Set outputs using the command.
