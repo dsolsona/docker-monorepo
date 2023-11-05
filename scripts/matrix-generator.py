@@ -32,12 +32,12 @@ def get_changed_dockerfiles():
     base_sha = os.environ.get('GH_BASE_SHA')
     commit_sha = os.environ.get('GITHUB_SHA')
 
-    if not base_sha or not commit_sha:
-        print("Could not find GH_BASE_SHA or GITHUB_SHA environment variables, skipping matrix generation")
-        return []
+    # if not base_sha or not commit_sha:
+    #     print("Could not find GH_BASE_SHA or GITHUB_SHA environment variables, skipping matrix generation")
+    #     return []
     
     command = ['git', 'diff', '--name-only', '--diff-filter=ACMRT', f'{base_sha}', f'{commit_sha}']
-    print(f"Running command {command}")
+    # print(f"Running command {command}")
     
     result = subprocess.run(command, capture_output=True, text=True)
     changed_files = result.stdout.strip().split('\n')
