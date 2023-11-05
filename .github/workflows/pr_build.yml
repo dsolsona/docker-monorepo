@@ -37,15 +37,15 @@ jobs:
         echo "Base ref: $GITHUB_BASE_REF"
         echo "SHA: $GITHUB_SHA"
 
-    - name: Get changed files again
-      id: changes
-      # Set outputs using the command.
-      run: |
-        echo "$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)" >> $GITHUB_OUTPUT
+    # - name: Get changed files again
+    #   id: changes
+    #   # Set outputs using the command.
+    #   run: |
+    #     echo "$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)" >> $GITHUB_OUTPUT
 
-    - name: Print all changed files again
-      run: | 
-        echo "Changed Files: ${{ steps.changes.outputs.all }}"
+    # - name: Print all changed files again
+    #   run: | 
+    #     echo "Changed Files: ${{ steps.changes.outputs.all }}"
 
 
     - name: Generate matrix for build
