@@ -33,7 +33,7 @@ def get_changed_dockerfiles():
     commit_sha = os.environ.get('GITHUB_SHA', 'HEAD')
 
     command = ['git', 'diff', '--name-only', '--diff-filter=ACMRT', f'{base_ref}', f'{commit_sha}']
-    # print(f"Running command {command}")
+    print(f"Running command {command}")
     
     result = subprocess.run(command, capture_output=True, text=True)
     changed_files = result.stdout.strip().split('\n')
