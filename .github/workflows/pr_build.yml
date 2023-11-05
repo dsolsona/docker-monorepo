@@ -41,8 +41,7 @@ jobs:
       id: changes
       # Set outputs using the command.
       run: |
-        echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
-        echo "::set-output name=ts::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .ts$ | xargs)"
+        echo "$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)" >> $GITHUB_OUTPUT
 
     - name: Print all changed files again
       run: | 
@@ -53,7 +52,7 @@ jobs:
       id: set-matrix
       run: python scripts/matrix-generator.py
       env:
-        GITHUB_BASE_REF: ${{ github.event.pull_request.base.sha }}
+        GH_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         GITHUB_SHA: ${{ github.sha }}"
 
     # - name: Login to Docker Hub
