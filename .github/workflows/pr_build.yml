@@ -50,7 +50,11 @@ jobs:
 
     - name: Generate matrix for build
       id: set-matrix
-      run: python scripts/matrix-generator.py
+      run: |
+        MATRIX_JSON=$(python scripts/matrix-generator.py)
+        echo "${MATRIX_JSON}"
+        echo "::set-output name=matrix::$MATRIX_JSON"
+    # python scripts/matrix-generator.py
       env:
         GH_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         GITHUB_SHA: ${{ github.sha }}
