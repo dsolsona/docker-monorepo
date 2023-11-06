@@ -1,6 +1,6 @@
 ---
 name: python
-architecture:
+architectures:
   - amd64
 disabled: false
 sign: false

@@ -16,12 +16,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -32,29 +26,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyyaml
 
-    - name: Debug output
-      run: |
-        echo "Base ref: $GITHUB_BASE_REF"
-        echo "SHA: $GITHUB_SHA"
-
-    # - name: Get changed files again
-    #   id: changes
-    #   # Set outputs using the command.
-    #   run: |
-    #     echo "$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)" >> $GITHUB_OUTPUT
-
-    # - name: Print all changed files again
-    #   run: | 
-    #     echo "Changed Files: ${{ steps.changes.outputs.all }}"
-
-
     - name: Generate matrix for build
       id: set-matrix
       run: |
         MATRIX_JSON=$(python scripts/matrix-generator.py)
         echo "${MATRIX_JSON}"
         echo "::set-output name=matrix::$MATRIX_JSON"
-    # python scripts/matrix-generator.py
       env:
         GH_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         GITHUB_SHA: ${{ github.sha }}
@@ -64,16 +41,6 @@ jobs:
     #   with:
     #     username: ${{ secrets.DOCKERHUB_USERNAME }}
     #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    # - name: Build and push multi-architecture Docker image
-    #   uses: docker/build-push-action@v3
-    #   with:
-    #     context: .
-    #     file: ./path-to-your/Dockerfile
-    #     push: true
-    #     tags: your-username/your-image-name:latest
-    #     platforms: linux/amd64,linux/arm64,linux/arm/v7
-    # ${{ join(matrix.architecture, ',') }}
 
   build-images:
     needs: build
@@ -85,5 +52,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Build Docker image
-      run: docker build -t ${{ matrix.name }} --file ${{ matrix.context }}/Dockerfile ${{ matrix.context }}
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Set up QEMU
+      if: contains(matrix.architectures, 'arm')
+      uses: docker/setup-qemu-action@v2
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ${{ matrix.context }}
+        file: ${{ matrix.context }}/Dockerfile
+        push: false
+        tags: ${{ join(matrix.tags, ',') }}
+        platforms: ${{ join(matrix.architectures, ',') }}

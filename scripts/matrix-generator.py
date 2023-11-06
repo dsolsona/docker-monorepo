@@ -66,7 +66,8 @@ def get_changed_dockerfiles():
                         'name': build_info['name'],
                         'sign': build_info.get('sign', False),
                         'disabled': build_info.get('disabled', False),
-                        'architecture': build_info.get('architecture', ['linux/amd64'])
+                        'tags': build_info.get('tags', ['latest']),
+                        'architectures': build_info.get('architectures', ['linux/amd64'])
                     })
 
     return dockerfile_info

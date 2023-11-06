@@ -1,6 +1,9 @@
 ---
 name: base-image
-architecture:
+architectures:
   - amd64
 disabled: false
 sign: false
+tags:
+  - latest
+  - 1.2.3
