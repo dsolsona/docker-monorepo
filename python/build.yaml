@@ -1,10 +1,6 @@
 ---
-name: base-image
+name: python
 architectures:
   - linux/amd64
-  - linux/arm/v7
 disabled: false
 sign: false
-tags:
-  - latest
-  - 1.2.3

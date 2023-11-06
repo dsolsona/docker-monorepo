@@ -29,14 +29,15 @@ def find_dockerfile_and_build_yaml(file_path):
     return None, None
 
 def get_changed_dockerfiles():
-    base_ref = os.environ.get('GITHUB_BASE_REF')
+    base_sha = os.environ.get('GH_BASE_SHA')
     commit_sha = os.environ.get('GITHUB_SHA')
 
-    if not base_ref or not commit_sha:
-        print("Could not find GITHUB_BASE_REF or GITHUB_SHA environment variables, skipping matrix generation")
-        return []
-    command = ['git', 'diff', '--name-only', '--diff-filter=ACMRT', f'{base_ref}', f'{commit_sha}']
-    print(f"Running command {command}")
+    # if not base_sha or not commit_sha:
+    #     print("Could not find GH_BASE_SHA or GITHUB_SHA environment variables, skipping matrix generation")
+    #     return []
+    
+    command = ['git', 'diff', '--name-only', '--diff-filter=ACMRT', f'{base_sha}', f'{commit_sha}']
+    # print(f"Running command {command}")
     
     result = subprocess.run(command, capture_output=True, text=True)
     changed_files = result.stdout.strip().split('\n')
@@ -65,7 +66,8 @@ def get_changed_dockerfiles():
                         'name': build_info['name'],
                         'sign': build_info.get('sign', False),
                         'disabled': build_info.get('disabled', False),
-                        'architecture': build_info.get('architecture', ['linux/amd64'])
+                        'tags': build_info.get('tags', ['latest']),
+                        'architectures': build_info.get('architectures', ['linux/amd64'])
                     })
 
     return dockerfile_info
